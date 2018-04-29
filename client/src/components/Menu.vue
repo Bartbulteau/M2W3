@@ -11,21 +11,47 @@
       <div class="row">
         <div class="col s12 m8 offset-m2">
           <div class="card">
-            <div class="card-content" id="chatwindow">
-              <span class="card-title">Messages</span>
-              <div v-for="(message, index) in messages" :key="index">
-                <blockquote v-if="message.author === username">
-                    <p><strong>{{message.author}} : </strong> {{message.content}} <br> [id] {{message._id}}</p>
-                </blockquote>
-                <blockquote class="myblockquote" v-else>
-                    <p><strong>{{message.author}} : </strong> {{message.content}} <br> [id] {{message._id}}</p>
-                </blockquote>
-                <div id="#end"></div>
+            <div class="card-content" ref="chatwindow">
+              <span class="card-title">Messages : </span>
+              <div class="messages-container">
+                <div v-for="(message, index) in messages" :key="index">
+                  <!-- <div v-if="index < showLimit"> -->
+                    <div v-if="message.author === username">
+                      <strong class="authorRed">{{message.author.toUpperCase()}} : </strong>
+                      <blockquote class="myblockquoteRed">
+                        <p>
+                          {{message.content}}
+                        </p>
+                        <br>
+                      </blockquote>
+                    </div>
+                    <div v-else >
+                      <strong class="authorBlue">{{message.author.toUpperCase()}} : </strong>
+                      <blockquote class="myblockquoteBlue">
+                        <p>
+                          {{message.content}}
+                        </p>
+                        <br>
+                      </blockquote>
+                    </div>
+                  <!-- </div> -->
+
+                </div>
+                <br>
+                <br>
+                <p class="white-text" ref="endOfScroll">testets</p>
+                <br>
+                <br>
               </div>
             </div>
             <div class="card-action">
-                <p>Message : <input type="text" v-model="msg.content" placeholder="Message" /> <a href="#end" @click="sendMsg()" class="btn right">Send</a></p>
-                <p><br></p>
+              <p>
+                <input type="text" v-model="msg.content" placeholder="Message" />
+                <a @click="sendMsg()" class="btn right">Envoyer</a>
+              </p>
+              <p>
+                <br>
+              </p>
             </div>
           </div>
         </div>
@@ -44,17 +70,18 @@ export default {
         content: "",
         author: ""
       },
-      username: "default"
+      username: "",
+      showLimit: 10
     }
   },
 
   sockets: {
 			new_message: function(msg) {
         this.messages.push(msg);
-        console.log(this.$refs.chatwindow);
-        this.$refs.chatwindow.scrollTop  = this.$refs.chatwindow.scrollHeight;
+        this.$refs.endOfScroll.scrollIntoView();
       },
       messages: function(messages) {
+        this.$refs.endOfScroll.scrollIntoView();
         this.messages = messages;
       },
       username: function(username) {
@@ -79,22 +106,47 @@ export default {
   },
 
   created() {
-    console.log('test');
     this.$socket.emit('get_messages');
   },
 
-  beforeUpdate () {
-    console.log('test');
+  mounted () {
+    this.$refs.endOfScroll.scrollIntoView();
   }
   
 }
 </script>
 <style scoped>
-.myblockquote {
+.myblockquoteBlue {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  padding-left: 0.5rem;
   border-left: 5px solid #2196F3;
 }
 .card-content {
+  height: 50vh;
+}
+
+.messages-container {
   overflow: scroll;
-  height: 47vh;
+  height: 40vh;
+}
+
+.myblockquoteRed {
+  margin-top: 5px;
+  margin-bottom: 20px;
+  padding-left: 0.5rem;
+  border-left: 5px solid #ee6e73;
+}
+
+.authorRed {
+  font-weight: 300;
+  padding: 0px;
+  color: #ee6e73;
+}
+
+.authorBlue {
+  font-weight: 300;
+  padding: 0px;
+  color: #2196F3;
 }
 </style>

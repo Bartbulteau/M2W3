@@ -65,22 +65,22 @@ module.exports = function (io) {
     console.log(req.body);
     User.findOne({ email: req.body.email }, function (err, user) {
       if (!user) {
-        res.render('login', { error: 'Invalid email or password.' });
+        res.render('login', { error: 'Email ou mot de passe invalide.' });
       } else {
         if (user !== null) {
           user.comparePassword(req.body.password, function (err, isMatch) {
-            if (err) res.render('login', { error: 'Invalid email or password.' });
+            if (err) res.render('login', { error: 'Email ou mot de passe invalide.' });
             if (isMatch === true) {
               // console.log(password + " : ", isMatch);
               // console.log('dataValues : ', user);
               req.session.user = user;
               res.redirect('/');
             } else {
-              res.render('login', { error: 'Invalid email or password.' });
+              res.render('login', { error: 'Email ou mot de passe invalide.' });
             }
           });
         } else {
-          res.render('login', { error: 'Invalid email or password.' });
+          res.render('login', { error: 'Email ou mot de passe invalide.' });
         }
       }
     });
@@ -101,17 +101,21 @@ module.exports = function (io) {
     user.username = req.body.username;
     user.password = req.body.password;
     user.email = req.body.email;
-
-    user.save(err => {
-      console.log(err)
-      if (err) {
-        // console.log('there is an error');
-        res.render('signup', { error: 'Email or username alredy used by someone' });
-      } else {
-        req.session.user = user;
-        res.redirect('/');
-      }
-    });
+    if (user.name === "" || user.email === "" || user.password === "") {
+      res.render('signup', { error: 'Complétez bien tous les champs'  });
+    }
+    else {
+      user.save(err => {
+        console.log(err)
+        if (err) {
+          // console.log('there is an error');
+          res.render('signup', { error: 'Email ou nom d\'utilisateur déjà utilisé par quelqu\'un'  });
+        } else {
+          req.session.user = user;
+          res.redirect('/');
+        }
+      }); 
+    }
   });
 
   router.get('/', requireLogin, function (req, res) {
