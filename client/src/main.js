@@ -10,7 +10,7 @@ Vue.config.productionTip = false
  * Socket.io
  */
 import VueSocketio from 'vue-socket.io';
-Vue.use(VueSocketio, 'http:/m2w3.herokuapp.com/');
+Vue.use(VueSocketio, 'http://m2w3.herokuapp.com/');
 
 import './../node_modules/materialize-css/dist/css/materialize.css'
 import './../node_modules/materialize-css/dist/js/materialize.min.js'
