@@ -8,6 +8,8 @@ module.exports = function (io) {
     // bring in model
     var Message = require('../models/message');
 
+    var clients = [] // all connected clients
+
 
     /**
     * Socket.io
@@ -70,6 +72,32 @@ module.exports = function (io) {
         socket.on('delete_messages', function() {
             Message.remove({}, err => {if(err) throw err});
 
+        });
+
+        socket.on('_connect', function(username) {
+            console.log('/!\\ New user connected : ' + username);
+            var isAlreadyConnected = false
+            for (let i = 0; i < clients.length; i++) {
+                const element = clients[i];
+                if  (element === username) {
+                    isAlreadyConnected = true
+                }
+                
+            }
+            if (!isAlreadyConnected) {
+                clients.push(username);
+            }
+            io.emit('updateUsers', clients);
+        });
+
+        socket.on('disconnect', function(username) {
+            console.log('/!\\ A user disconnected : ' + username)
+            clients.splice(clients.indexOf(username), 1);
+            io.emit('updateUsers', clients);
+        });
+
+        socket.on('get_users', function(){
+            socket.emit('updateUsers', clients);
         });
 
 

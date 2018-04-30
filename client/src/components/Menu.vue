@@ -56,6 +56,13 @@
           </div>
         </div>
       </div>
+
+      <ul class="collection with-header">
+        <li class="collection-header"><h4>En ligne</h4></li>
+        <li class="collection-item" v-for="(user, index) in onlineUsers" :key="index">{{user}}</li>
+      </ul>
+
+
     </div>
   </div>
 </template>
@@ -71,7 +78,7 @@ export default {
         author: ""
       },
       username: "",
-      showLimit: 10
+      onlineUsers: []
     }
   },
 
@@ -81,11 +88,16 @@ export default {
         this.$refs.endOfScroll.scrollIntoView();
       },
       messages: function(messages) {
-        this.$refs.endOfScroll.scrollIntoView();
         this.messages = messages;
+        this.$refs.endOfScroll.scrollIntoView();
       },
       username: function(username) {
         this.username = username;
+        console.log(this.username);
+        this.$socket.emit('_connect', this.username);
+      },
+      updateUsers: function(users) {
+        this.onlineUsers = users;
       }
 	},
 
@@ -107,10 +119,16 @@ export default {
 
   created() {
     this.$socket.emit('get_messages');
+    this.$socket.emit('get_users');
   },
 
   mounted () {
     this.$refs.endOfScroll.scrollIntoView();
+  },
+
+  beforeDestroy () {
+    console.log(this.username);
+    this.$socket.emit('disconnect', this.username);
   }
   
 }

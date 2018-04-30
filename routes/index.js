@@ -120,7 +120,7 @@ module.exports = function (io) {
 
   router.get('/', requireLogin, function (req, res) {
     io.on('connection', function(socket) {
-      socket.emit('username', req.session.user.username)
+      socket.emit('username', req.session.user.username);
     });
     res.sendFile(path.join(__dirname, '../public/index.html'));
   });
